@@ -1,0 +1,14 @@
+{
+    "name": "CGTK.Utils.Terminal",
+    "rootNamespace": "CGTK.Utils.Terminal",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
