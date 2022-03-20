@@ -10,28 +10,29 @@ namespace CGTK.Utils.Terminal
 {
     public static partial class Terminal
     {
-        public sealed class GizmoDrawer : MonoBehaviour
+        public sealed class Drawer : MonoBehaviour
         {
             #region Singleton
             
-            private static readonly Lazy<GizmoDrawer> lazy_instance = new Lazy<GizmoDrawer>(CreateSingleton);
-            public static GizmoDrawer Instance => lazy_instance.Value;
+            private static readonly Lazy<Drawer> lazy_instance = new Lazy<Drawer>(CreateSingleton);
+            public static Drawer Instance => lazy_instance.Value;
 
-            private static GizmoDrawer CreateSingleton()
+            private static Drawer CreateSingleton()
             {
-                GameObject __owner = new GameObject(); //{ hideFlags = HideFlags.HideInHierarchy };
+                //can't hide it, those don't work with DonDestroyOnLoad for some dumb reason.
+                GameObject __owner = new GameObject(name: "[" + nameof(CGTK.Utils.Terminal) + "." + nameof(Drawer) + "]"); //{ hideFlags = HideFlags.HideInHierarchy }; 
                 DontDestroyOnLoad(__owner);
                 
-                return __owner.AddComponent<GizmoDrawer>();
+                return __owner.AddComponent<Drawer>();
             }
             
             #endregion
             
-            private readonly List<Gizmo> _gizmos = new List<Gizmo>();
+            internal readonly List<Gizmo> gizmos = new List<Gizmo>();
 
             private void Update()
             {
-                foreach (Gizmo __gizmo in _gizmos)
+                foreach (Gizmo __gizmo in gizmos)
                 {
                     __gizmo.durationLeft -= Time.deltaTime;
                 }
@@ -39,19 +40,31 @@ namespace CGTK.Utils.Terminal
 
             private void OnDrawGizmos()
             {
-                foreach (Gizmo __gizmo in _gizmos)
+                for (int __index = gizmos.Count - 1; __index >= 0; __index--) //reverse for loop so we can delete gizmos once they're dead.
+                {
+                    Gizmo __gizmo = gizmos[__index]; 
+                    
+                    __DrawGizmo(__gizmo);
+                    
+                    if(__gizmo.IsDead)
+                    {
+                        gizmos.Remove(__gizmo);
+                    }
+                }
+
+                void __DrawGizmo(Gizmo gizmo)
                 {
                     Color     __prevColor  = Gizmos.color;
                     Matrix4x4 __prevMatrix = Gizmos.matrix;
                     
-                    Gizmos.color = __gizmo.color;
+                    Gizmos.color = gizmo.color;
 
-                    if (__gizmo.matrix != default)
+                    if (gizmo.matrix != default)
                     {
-                        Gizmos.matrix = __gizmo.matrix;
+                        Gizmos.matrix = gizmo.matrix;
                     }
 
-                    __gizmo.Invoke();
+                    gizmo.Invoke();
                     
                     Gizmos.color  = __prevColor;
                     Gizmos.matrix = __prevMatrix;
@@ -60,13 +73,13 @@ namespace CGTK.Utils.Terminal
             
             [PublicAPI]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static void Draw(in Gizmo gizmo)
-                => Instance._gizmos.Add(gizmo);
+            public static void Draw(Gizmo gizmo)
+                => Instance.gizmos.Add(gizmo);
             
             [PublicAPI]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static void Draw(params Gizmo[] gizmos)
-                => Instance._gizmos.AddRange(gizmos);
+                => Instance.gizmos.AddRange(gizmos);
         }
         
         

@@ -22,6 +22,9 @@ namespace CGTK.Utils.Terminal
                 this.creationFrame = Time.frameCount;
             }
 
+            public bool IsAlive => (durationLeft > 0f);
+            public bool IsDead  => (durationLeft <= 0f);
+
             public Gizmo Color(Color color)
             {
                 this.color = color;
