@@ -1,7 +1,9 @@
 {
     "name": "CGTK.Utils.Terminal",
     "rootNamespace": "CGTK.Utils.Terminal",
-    "references": [],
+    "references": [
+        "Unity.Mathematics"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
